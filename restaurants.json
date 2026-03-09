@@ -1,0 +1,16 @@
+{
+  "restaurants": [
+    {
+      "name": "Padagali",
+      "url": "https://padagali.choiceqr.com/section:denni-menu/utery"
+    },
+    {
+      "name": "Seminář",
+      "url": "https://www.useminaru.cz/menu.php"
+    },
+    {
+      "name": "Garden Food Concept",
+      "url": "https://www.gardenfoodconcept.cz/poledni-menu/"
+    }
+  ]
+}

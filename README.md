@@ -1,11 +1,12 @@
 # 🍽️ Lunch Time - Daily Lunch Specials Scraper
 
-Automatically scrapes daily lunch specials from nearby restaurants and posts them to Slack. Runs completely free using GitHub Actions scheduling.
+Automatically scrapes daily lunch specials from nearby restaurants and posts them to Slack. Results also display on a beautiful static HTML website via GitHub Pages. Runs completely free using GitHub Actions scheduling.
 
 ## Features
 
 ✅ **HTML Scraping** - Extracts daily specials from restaurant menu pages  
 ✅ **Slack Integration** - Posts beautifully formatted menu updates to your Slack workspace  
+✅ **GitHub Pages Website** - View specials on a responsive HTML site  
 ✅ **GitHub Actions** - Free scheduling, no external servers needed  
 ✅ **Customizable** - Easy to add multiple restaurants or change posting destination  
 
@@ -22,34 +23,63 @@ Automatically scrapes daily lunch specials from nearby restaurants and posts the
 7. Select the channel where you want lunch specials posted
 8. Copy the Webhook URL (looks like `https://hooks.slack.com/services/...`)
 
-### 2. Configure GitHub Secrets
+### 2. Configure Restaurants
+
+Edit [restaurants.json](restaurants.json) to add or modify restaurants:
+
+```json
+{
+  "restaurants": [
+    {
+      "name": "Padagali",
+      "url": "https://padagali.choiceqr.com/section:denni-menu/utery"
+    },
+    {
+      "name": "Seminář",
+      "url": "https://www.useminaru.cz/menu.php"
+    },
+    {
+      "name": "Garden Food Concept",
+      "url": "https://www.gardenfoodconcept.cz/poledni-menu/"
+    }
+  ]
+}
+```
+
+### 3. Configure GitHub Secrets (for GitHub Actions)
 
 1. Go to your repository on GitHub
 2. Settings → Secrets and variables → Actions
 3. Click "New repository secret"
-4. Add these secrets:
+4. Add:
 
 | Name | Value |
 |------|-------|
 | `SLACK_WEBHOOK_URL` | Your Slack webhook URL from step 1 |
-| `RESTAURANTS_URL` | `https://padagali.choiceqr.com/section:denni-menu/utery` (or comma-separated URLs) |
+| `RESTAURANTS_URL` | *(Optional)* Comma-separated URLs if not using restaurants.json |
 
-**Example with multiple restaurants:**
-```
-https://restaurant1.com/menu,https://restaurant2.com/menu
-```
+**Note:** If you commit `restaurants.json` to the repo, you don't need to set `RESTAURANTS_URL`. The scraper will automatically use `restaurants.json`. The `RESTAURANTS_URL` env var is only needed if you want to override it in GitHub Actions or run without a config file.
 
-### 3. Deploy
+### 4. Enable GitHub Pages
 
-Just push this code to GitHub:
-```bash
-git add .
-git commit -m "Initial lunch scraper setup"
-git push
-```
+1. Go to Settings → Pages
+2. Under "Source", select "Deploy from a branch"
+3. Select branch: `main`, folder: `/ (root)` → `docs`
+4. Click "Save"
 
-The GitHub Actions workflow will automatically run every weekday at 9 AM UTC.
+Your site will be live at: `https://YOUR_USERNAME.github.io/lunch_time`
 
+### 5. Deploy
+
+JusUsage
+
+### View Lunch Specials
+
+**On the Web:** 🌐 Visit `https://YOUR_USERNAME.github.io/lunch_time` after enabling Pages (updates twice daily)
+
+**In Slack:** Receive Slack notifications at 9 AM and 10:45 AM UTC (weekdays)
+
+**Manual Test:** Go to Actions → "Daily Lunch Specials Scraper" → "Run workflow"
 ## Manual Testing
 
 To test immediately without waiting for the schedule:
@@ -69,15 +99,17 @@ Edit [/.github/workflows/lunch-scraper.yml](.github/workflows/lunch-scraper.yml)
 ```yaml
 on:
   schedule:
-    - cron: '0 9 * * 1-5'  # 9 AM, Monday-Friday
+    - cron: '0 9 * * 1-5'    # 9 AM, Monday-Friday
+    - cron: '45 10 * * 1-5'  # 10:45 AM, Monday-Friday
 ```
 
 **Cron format:** `minute hour day month day-of-week`
 
 Common examples:
 - `'0 9 * * *'` - Daily at 9 AM
-- `'0 9 * * 1-5'` - Weekdays only (default)
-- `'0 11,14 * * 1-5'` - 11 AM and 2 PM on weekdays
+- `'0 9 * * 1-5'` - 9 AM on weekdays
+- `'45 10 * * 1-5'` - 10:45 AM on weekdays
+- Multiple crons run the workflow multiple times per day
 
 Use [crontab.guru](https://crontab.guru) to generate expressions.
 
@@ -88,7 +120,7 @@ Add comma-separated URLs to the `RESTAURANTS_URL` secret:
 https://restaurant1.com/menu,https://restaurant2.com/menu,https://restaurant3.com/menu
 ```
 
-### Modify the Scraper
+### Modify Scraper Logic
 
 Edit [scraper.py](scraper.py) to:
 - Change HTML parsing selectors for different website structures
@@ -118,6 +150,13 @@ The scraper tries multiple HTML parsing strategies. If your restaurant uses a di
 3. Push changes and test with manual workflow trigger
 
 ## Examples
+
+### Website Output
+Visit your GitHub Pages site to see a mobile-friendly lunch specials page with:
+- Restaurant names and daily specials
+- Links to full menus
+- Beautiful gradient background
+- Mobile-responsive design
 
 ### Slack Output
 ```
